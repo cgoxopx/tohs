@@ -1,0 +1,81 @@
+<input type="file" accept="image/*" type="file" name="imageFile" οnchange="upload()">
+<button onclick="upload()">gen</button><br>
+<img id="out"/>
+<script src = "gif.js" > </script>
+<script>
+    function upload() {
+        let file = document.querySelector('input[type=file]').files[0];  // 获取选择的文件，这里是图片类型
+        let reader = new FileReader();
+        reader.readAsDataURL(file); //读取文件并将文件以URL的形式保存在resulr属性中 base64格式
+        reader.onload = function(e) { // 文件读取完成时触发 
+            let result = e.target.result; // base64格式图片地址 
+            createGif(result);
+        }
+    }
+    function createGif(img) {
+        var gif = new GIF({
+            workers: 2,
+            quality: 10,
+            workerScript: 'gif.worker.js'
+        });
+        var j = 0;
+
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext('2d');
+
+        var imgImage = new Image();
+        imgImage.src = img;
+        imgImage.onload = function(e) {
+
+            //Canvas绘制图片
+            canvas.width = imgImage.width;
+            canvas.height = imgImage.height;
+            
+            var xn = parseInt(Math.ceil(imgImage.width/20));
+            var yn = parseInt(Math.ceil(imgImage.height/20));
+            
+            function drawBlock(x,y) {
+                ctx.fillStyle = "#000";
+                ctx.fillRect(x*20,y*20,20,20);
+            }
+            
+            function drawAllBlock(tx,ty) {
+                for(var i=0;i<xn;++i){
+                    for(var j=0;j<yn;++j){
+                        var nx = i%2;
+                        var ny = j%2;
+                        if(nx==tx && ny==ty){
+                        }else {
+                            drawBlock(i,j);
+                        }
+                    }
+                }
+            }
+            
+            function draw() {
+                //铺底色
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(imgImage, 0, 0, imgImage.width, imgImage.height);
+            }
+            
+            for(var i=0;i<2;++i){
+                for(var j=0;j<2;++j){
+                    draw();
+                    drawAllBlock(i,j);
+                    gif.addFrame(canvas, {
+                        copy: true,
+                        delay: 25
+                    });
+                }
+            }
+            gif.render();
+        }
+
+        gif.on('finished', function(blob) {
+            //生成图片链接
+            var url = URL.createObjectURL(blob);
+            document.getElementById("out").src = url;
+        });
+    }
+</script>
