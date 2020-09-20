@@ -6,7 +6,7 @@
 <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0" />
 <body>
 <input type="file" accept="image/*" type="file" name="imageFile" οnchange="upload()"/><br>
-背景色<input type="color" id="bkg" value="#000"/><br>
+背景色<input type="text" id="bkg" value="#000"/><br>
 刷新间隔<input type="number" id="delay" value="25"/>
 <button onclick="upload()">生成</button><br>
 <a href="javascript:void(0)" id="out-download" download><img id="out"/></a>
